@@ -1,1 +1,3 @@
-./node_modules
+./js-cheerio/node_modules
+./js-puppeteer/node_modules
+/jv-scraper/build/
