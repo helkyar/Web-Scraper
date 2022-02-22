@@ -53,7 +53,7 @@ public class Scraper {
             final Document document = Jsoup.connect(URL).get();
             
 //            System.out.println(document.outerHtml());
-            id = 0;
+            id = getCurrentGamesCount();
             for (Element table : document.select(".jor")) {
                 for(Element tr:table.select("tr")){
                     if(tr.select(".local").text().equals("")){continue;}
@@ -64,7 +64,6 @@ public class Scraper {
 //                    storeInDatabaseTeams(loc);
                     updateTeamsGoals(loc, vis, res);
                     updateDatabaseGames(id, loc, vis, res);
-//                    updateGameResults(id, res);
                     id++;
                 }           
             }            
@@ -200,7 +199,8 @@ public class Scraper {
         } catch (SQLException ex) {ex.printStackTrace();}      
         finally { try {conn.close();} catch (SQLException ex) {ex.printStackTrace();}}
     }
-        private static void updateDatabaseGames(int id, String loc, String vis, String res) {
+    
+    private static void updateDatabaseGames(int id, String loc, String vis, String res) {
         
         final String query = "UPDATE `games` SET `local`=?, `visitor`=?, "
                 + "`local_result`=?, `visitor_result`=?, `date`=? "
@@ -237,4 +237,18 @@ public class Scraper {
         } catch (SQLException ex) {ex.printStackTrace();}      
         finally { try {conn.close();} catch (SQLException ex) {ex.printStackTrace();}}         
     }   
+
+    private static int getCurrentGamesCount() {
+        String query = "SELECT scraper_id FROM games ORDER BY scraper_id DESC LIMIT 1";
+        try{
+            st = conn.createStatement();
+            rs = st.executeQuery(query);
+            
+            //+1 to avoid overwriting the last row
+            if (rs.next()) {return rs.getInt(1)+1;} 
+            else {return 0;}
+            
+       } catch (SQLException ex) {ex.printStackTrace(); return 0;}      
+        finally { try {conn.close();} catch (SQLException ex) {ex.printStackTrace();}}
+    }
 }
