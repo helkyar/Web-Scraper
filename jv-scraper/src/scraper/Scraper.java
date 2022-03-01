@@ -53,7 +53,8 @@ public class Scraper {
             final Document document = Jsoup.connect(URL).get();
             
 //            System.out.println(document.outerHtml());
-            id = getCurrentGamesCount();
+            int newId = getCurrentGamesCount();
+            id = (newId > 0) ? newId : 0;
             for (Element table : document.select(".jor")) {
                 for(Element tr:table.select("tr")){
                     if(tr.select(".local").text().equals("")){continue;}
